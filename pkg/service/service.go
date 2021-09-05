@@ -8,6 +8,13 @@ import (
 )
 
 // server is used to implement helloworld.GreeterServer.
+//type PostgresType struct {
+//	db *sqlx.DB
+//}
+//
+//func NewQueryPostgres(db *sqlx.DB) *PostgresType {
+//	return &PostgresType{db: db}
+//}
 
 var (
 	DbMap        = make(map[string]string)
@@ -117,6 +124,8 @@ func CuttingLink(link string) string {
 	linkOriginal := link
 	link = RandomizeString(link)
 	DbMap[link] = linkOriginal
+	//здесь необходимо прописать добавление в таблицу
+
 	for key, value := range DbMap {
 		log.Printf("DBMap  | Short [%s]: Orig [%s]\n", key, value)
 	}
