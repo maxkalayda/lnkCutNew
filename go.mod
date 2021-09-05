@@ -1,4 +1,4 @@
-module github.com/maxkalayda/lnkCutterNew
+module github.com/maxkalayda/lnkCutNew
 
 go 1.17
 

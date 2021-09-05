@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/maxkalayda/lnkCutNew/api/proto"
 	"github.com/maxkalayda/lnkCutNew/pkg/service"
-	lnkCutNew "github.com/maxkalayda/lnkCutterNew/pkg/service"
+	lnkCutNew "github.com/maxkalayda/lnkCutNew/pkg/service"
 	"log"
 	"unicode/utf8"
 )
