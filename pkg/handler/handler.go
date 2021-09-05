@@ -18,7 +18,7 @@ func (s *Server) Create(ctx context.Context, in *proto.LinkRequest) (*proto.Link
 	tmp := in.GetName()
 	log.Printf("Server | Received from client origLink: %v", in.GetName())
 	tmp = lnkCutNew.CuttingLink(tmp)
-	//tmp = CuttingLink(tmp)
+
 	return &proto.LinkReply{Message: "Server | Client get short link: " + tmp}, nil
 }
 
