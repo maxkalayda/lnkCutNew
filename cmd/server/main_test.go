@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/maxkalayda/lnkCutterNew/pkg/service"
+	"github.com/maxkalayda/lnkCutNew/pkg/service"
 	"testing"
 	"unicode"
 )
