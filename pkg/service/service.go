@@ -120,7 +120,8 @@ func CuttingLink(link string) string {
 	DbMap[link] = linkOriginal
 	//здесь необходимо прописать добавление в таблицу
 	tmpDB, _ := repository.AddNewRow(link, linkOriginal)
-	log.Println("added", tmpDB)
+	test, _ := repository.SearchRow(link)
+	log.Println("added tmpDB, test:", tmpDB, test)
 	for key, value := range DbMap {
 		log.Printf("DBMap  | Short [%s]: Orig [%s]\n", key, value)
 	}

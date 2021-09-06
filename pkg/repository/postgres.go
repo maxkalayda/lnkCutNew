@@ -21,9 +21,16 @@ type Config struct {
 	SSLMode  string
 }
 
-func PostgresConnect(cfg Config) (*sqlx.DB, error) {
+func PostgresConnect() (*sqlx.DB, error) {
+	//лучше конфиг
+	Host := "localhost"
+	Port := "5432"
+	Username := "postgres"
+	Password := os.Getenv("DB_PASSWORD")
+	DBName := "postgres"
+	SSLMode := "disable"
 	db, err := sqlx.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
-		cfg.Host, cfg.Port, cfg.Username, cfg.DBName, cfg.Password, cfg.SSLMode))
+		Host, Port, Username, DBName, Password, SSLMode))
 	if err != nil {
 		return nil, err
 	}
@@ -32,29 +39,41 @@ func PostgresConnect(cfg Config) (*sqlx.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("successfully connected to DB: %s:%s", cfg.Host, cfg.Port)
+	log.Printf("successfully connected to DB: %s:%s", Host, Port)
 	return db, nil
 }
 
 func AddNewRow(sl, ol string) (int, error) {
-	//query := fmt.Sprintf("INSERT INTO storage_links_tab (shortLink, originalLink) values ($1, $2) RETURNING id")
 	var id int
-	db, err := PostgresConnect(Config{
-		Host:     "localhost",
-		Port:     "5432",
-		Username: "postgres",
-		Password: os.Getenv("DB_PASSWORD"),
-		DBName:   "postgres",
-		SSLMode:  "disable",
-	})
+	db, err := PostgresConnect()
 	if err != nil {
 		log.Fatalf("failed to init db: %s, %s", err.Error(), db)
 	}
-	//query := fmt.Sprintf("select * from storage_links_tab")
+	tx, _ := db.Begin()
 	query := fmt.Sprintf("INSERT INTO storage_links_tab (short_link, original_link) values ($1, $2)")
 	row := db.QueryRow(query, sl, ol)
 	if err := row.Scan(&id); err != nil {
 		return 0, err
 	}
+	tx.Commit()
+	log.Println("Row inserted")
+	return 0, nil
+}
+
+func SearchRow(sl string) (int, error) {
+	var id int
+	db, err := PostgresConnect()
+	if err != nil {
+		log.Fatalf("failed to init db: %s, %s", err.Error(), db)
+	}
+	tx, _ := db.Begin()
+	query := fmt.Sprintf("SELECT * FROM storage_links_tab WHERE short_link='$1'")
+
+	row := db.QueryRow(query, sl)
+	if err := row.Scan(&id); err != nil {
+		return 0, err
+	}
+	tx.Commit()
+	log.Println("search row")
 	return 0, nil
 }

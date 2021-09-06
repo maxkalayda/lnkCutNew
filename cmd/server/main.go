@@ -30,7 +30,6 @@ import (
 	"log"
 	"math/rand"
 	"net"
-	"os"
 	"time"
 )
 
@@ -46,14 +45,7 @@ func main() {
 		log.Fatalf("env not loaded: %s", err.Error())
 	}
 
-	db, err := repository.PostgresConnect(repository.Config{
-		Host:     "localhost",
-		Port:     "5432",
-		Username: "postgres",
-		Password: os.Getenv("DB_PASSWORD"),
-		DBName:   "postgres",
-		SSLMode:  "disable",
-	})
+	db, err := repository.PostgresConnect()
 	if err != nil {
 		log.Fatalf("failed to init db: %s, %s", err.Error(), db)
 	}
