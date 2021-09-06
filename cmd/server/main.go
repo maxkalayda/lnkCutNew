@@ -57,7 +57,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to init db: %s, %s", err.Error(), db)
 	}
-
 	lis, err := net.Listen("tcp", port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
