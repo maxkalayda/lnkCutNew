@@ -10,7 +10,7 @@ import (
 )
 
 type Server struct {
-	proto.UnimplementedGreeterServer
+	proto.UnimplementedLinkServiceServer
 }
 
 func (s *Server) Create(ctx context.Context, in *proto.LinkRequest) (*proto.LinkReply, error) {

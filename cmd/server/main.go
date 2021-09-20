@@ -35,7 +35,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterGreeterServer(s, &handler.Server{})
+	pb.RegisterLinkServiceServer(s, &handler.Server{})
 	//для тестов
 	reflection.Register(s)
 	if err := s.Serve(lis); err != nil {
