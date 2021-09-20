@@ -8,8 +8,6 @@ import (
 	"unicode/utf8"
 )
 
-// server is used to implement helloworld.GreeterServer.
-
 var (
 	DbMap        = make(map[string]string)
 	CompareSlice []string
