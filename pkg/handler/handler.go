@@ -20,13 +20,12 @@ func (s *Server) Create(ctx context.Context, in *proto.LinkRequest) (*proto.Link
 	log.Printf("Server | Received from client origLink: %v", in.GetLink())
 	tmp = lnkCutNew.CuttingLink(tmp)
 	return &proto.LinkReply{Url: tmp}, nil
-	//return &proto.LinkReply{Name2: in.GetName() + ":" + tmp}, nil
 }
 
 func (s *Server) Get(ctx context.Context, in *proto.LinkRequest) (*proto.LinkReply, error) {
 	tmp := in.GetLink()
 	tmpLen := utf8.RuneCountInString(tmp)
-	_, ok := service.DbMap[tmp]
+	_, ok := service.MSync.Load(tmp)
 	if tmpLen < 10 {
 		err := status.Newf(
 			codes.InvalidArgument,
@@ -49,8 +48,8 @@ func (s *Server) Get(ctx context.Context, in *proto.LinkRequest) (*proto.LinkRep
 		return nil, err.Err()
 	} else {
 		log.Printf("Получили от клиента укороченную ссылку: %v", in.GetLink())
-		tmp = service.DbMap[tmp]
+		newVal, _ := service.MSync.Load(tmp)
+		tmp = newVal.(string)
 	}
 	return &proto.LinkReply{Url: tmp}, nil
-	//return &proto.LinkReply{Message: "Server | Original Link: " + tmp}, nil
 }

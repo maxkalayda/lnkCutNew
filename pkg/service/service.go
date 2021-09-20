@@ -4,13 +4,14 @@ import (
 	"github.com/maxkalayda/lnkCutNew/pkg/repository"
 	"log"
 	"strings"
+	"sync"
 	"unicode"
 	"unicode/utf8"
 )
 
 var (
-	DbMap        = make(map[string]string)
 	CompareSlice []string
+	MSync        sync.Map
 )
 
 func RandomizeString(link string) string {
@@ -58,7 +59,7 @@ func RandomizeString(link string) string {
 	//содержит цифры
 	//сожержит _
 	//уникальна
-	if value, ok := DbMap[string(rLink)+"_"]; ok {
+	if value, ok := MSync.Load(string(rLink) + "_"); ok {
 		log.Println("Ссылка уже существует в MAP!")
 		if value != originalLink[0:originalLinkLen] {
 			log.Println("Оригинальные ссылки разные", value, originalLink[0:originalLinkLen])
@@ -73,6 +74,7 @@ func RandomizeString(link string) string {
 		}
 
 	}
+
 	//проверка на количество апперов и лоуверов
 	countDig := 0
 	countUpper := 0
@@ -115,14 +117,15 @@ func CuttingLink(link string) string {
 	//создаём укороченную линку и вносим в мап
 	linkOriginal := link
 	link = RandomizeString(link)
-	DbMap[link] = linkOriginal
+	MSync.Store(link, linkOriginal)
 	//здесь необходимо прописать добавление в таблицу
 	tmpDB, _ := repository.AddNewRow(link, linkOriginal)
 	//test, _ := repository.SearchRow(link)
 	log.Println("added tmpDB, test:", tmpDB) //test
-	for key, value := range DbMap {
-		log.Printf("DBMap  | Short [%s]: Orig [%s]\n", key, value)
-	}
-	log.Println("DBMap len:", len(DbMap))
+
+	MSync.Range(func(key, value interface{}) bool {
+		log.Println("MSync:", key, value)
+		return true
+	})
 	return link
 }
