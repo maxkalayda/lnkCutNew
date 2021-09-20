@@ -118,14 +118,21 @@ func CuttingLink(link string) string {
 	linkOriginal := link
 	link = RandomizeString(link)
 	MSync.Store(link, linkOriginal)
+
+	//var mp repository.LinkQuery = &repository.SyncMapS{}
+	//mp.AddLink(link, linkOriginal, MSync)
+
 	//здесь необходимо прописать добавление в таблицу
 	tmpDB, _ := repository.AddNewRow(link, linkOriginal)
-	//test, _ := repository.SearchRow(link)
 	log.Println("added tmpDB, test:", tmpDB) //test
 
 	MSync.Range(func(key, value interface{}) bool {
 		log.Println("MSync:", key, value)
 		return true
 	})
+	//test
+	test, _ := repository.SearchRow(link)
+	log.Println("Test", test)
+	//test
 	return link
 }

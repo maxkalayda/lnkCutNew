@@ -21,6 +21,11 @@ type Config struct {
 	SSLMode  string
 }
 
+type Item struct {
+	ShortLink    string
+	OriginalLink string
+}
+
 func PostgresConnect() (*sqlx.DB, error) {
 	//лучше конфиг
 	Host := "localhost"
@@ -49,38 +54,27 @@ func AddNewRow(sl, ol string) (int, error) {
 	if err != nil {
 		log.Fatalf("failed to init db: %s, %s", err.Error(), db)
 	}
-	tx, _ := db.Begin()
 	query := fmt.Sprintf("INSERT INTO storage_links_tab (short_link, original_link) values ($1, $2)")
 	row := db.QueryRow(query, sl, ol)
 	if err := row.Scan(&id); err != nil {
 		return 0, err
 	}
-	tx.Commit()
 	log.Println("Row inserted")
 	return 0, nil
 }
 
 func SearchRow(sl string) (int, error) {
 	var id int
+	//items := []*models.Item{}
+	//items := models.Item{}
 	db, err := PostgresConnect()
 	if err != nil {
 		log.Fatalf("failed to init db: %s, %s", err.Error(), db)
 	}
-	tx, _ := db.Begin()
-	query := fmt.Sprintf("SELECT * FROM storage_links_tab WHERE short_link like '%$1%'")
+	query := fmt.Sprintf("SELECT original_link FROM storage_links_tab WHERE short_link=(?)", sl)
 
-	row, _ := db.Query(query, sl)
-	for row.Next() {
-		var shrtLink string
-		var origLink string
-		err := row.Scan(shrtLink, origLink)
-		if err != nil {
-			log.Fatalf("failted to search")
-		}
-		log.Println("db:", shrtLink, origLink)
-	}
+	row, _ := db.Query(query)
 
-	tx.Commit()
-	log.Println("search row:", row, id)
+	log.Println("search row:", id, row)
 	return 0, err
 }
