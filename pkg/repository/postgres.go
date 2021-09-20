@@ -67,13 +67,20 @@ func SearchRow(sl string) (int, error) {
 		log.Fatalf("failed to init db: %s, %s", err.Error(), db)
 	}
 	tx, _ := db.Begin()
-	query := fmt.Sprintf("SELECT * FROM storage_links_tab WHERE short_link='$1'")
+	query := fmt.Sprintf("SELECT * FROM storage_links_tab WHERE short_link like '%$1%'")
 
-	row := db.QueryRow(query, sl)
-	if err := row.Scan(&id); err != nil {
-		return 0, err
+	row, _ := db.Query(query, sl)
+	for row.Next() {
+		var shrtLink string
+		var origLink string
+		err := row.Scan(shrtLink, origLink)
+		if err != nil {
+			log.Fatalf("failted to search")
+		}
+		log.Println("db:", shrtLink, origLink)
 	}
+
 	tx.Commit()
-	log.Println("search row")
-	return 0, nil
+	log.Println("search row:", row, id)
+	return 0, err
 }

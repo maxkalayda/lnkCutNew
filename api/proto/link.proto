@@ -10,9 +10,9 @@ service LinkService {
 }
 
 message LinkRequest {
-  string name = 1;
+  string link = 1;
 }
 
 message LinkReply {
-  string message = 1;
+  string url = 1;
 }
