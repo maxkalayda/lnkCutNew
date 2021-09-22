@@ -2,14 +2,10 @@ package repository
 
 import (
 	"fmt"
-	"github.com/jmoiron/sqlx"
 	"log"
 	"os"
-)
 
-var (
-	shortLink    = "short_link"
-	originalLink = "original_link"
+	"github.com/jmoiron/sqlx"
 )
 
 type Config struct {
@@ -19,11 +15,6 @@ type Config struct {
 	Password string
 	DBName   string
 	SSLMode  string
-}
-
-type Item struct {
-	ShortLink    string
-	OriginalLink string
 }
 
 func PostgresConnect() (*sqlx.DB, error) {

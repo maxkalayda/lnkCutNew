@@ -1,6 +1,11 @@
 package main
 
 import (
+	"log"
+	"math/rand"
+	"net"
+	"time"
+
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	pb "github.com/maxkalayda/lnkCutNew/api/proto"
@@ -8,10 +13,6 @@ import (
 	"github.com/maxkalayda/lnkCutNew/pkg/repository"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"log"
-	"math/rand"
-	"net"
-	"time"
 )
 
 const (

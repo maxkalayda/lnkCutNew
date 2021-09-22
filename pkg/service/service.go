@@ -1,17 +1,13 @@
 package service
 
 import (
-	"github.com/maxkalayda/lnkCutNew/pkg/repository"
+	"github.com/maxkalayda/lnkCutNew/pkg"
 	"log"
 	"strings"
-	"sync"
 	"unicode"
 	"unicode/utf8"
-)
 
-var (
-	CompareSlice []string
-	MSync        sync.Map
+	"github.com/maxkalayda/lnkCutNew/pkg/repository"
 )
 
 func RandomizeString(link string) string {
@@ -52,14 +48,14 @@ func RandomizeString(link string) string {
 		}
 	}
 	//для сравнения, что такая линка не юзается
-	CompareSlice = append(CompareSlice, string(rLink))
+	pkg.CompareSlice = append(pkg.CompareSlice, string(rLink))
 	//проверка перед отправкой дальше, что соответствует шаблону
 	//длина 10 символов
 	//содержит буквы up down
 	//содержит цифры
 	//сожержит _
 	//уникальна
-	if value, ok := MSync.Load(string(rLink) + "_"); ok {
+	if value, ok := pkg.MSync.Load(string(rLink) + "_"); ok {
 		log.Println("Ссылка уже существует в MAP!")
 		if value != originalLink[0:originalLinkLen] {
 			log.Println("Оригинальные ссылки разные", value, originalLink[0:originalLinkLen])
@@ -117,16 +113,24 @@ func CuttingLink(link string) string {
 	//создаём укороченную линку и вносим в мап
 	linkOriginal := link
 	link = RandomizeString(link)
-	MSync.Store(link, linkOriginal)
+	//pkg.MSync.Store(link, linkOriginal)
 
 	//var mp repository.LinkQuery = &repository.SyncMapS{}
 	//mp.AddLink(link, linkOriginal, MSync)
-
+	//mp.GetLink(link)
 	//здесь необходимо прописать добавление в таблицу
 	tmpDB, _ := repository.AddNewRow(link, linkOriginal)
-	log.Println("added tmpDB, test:", tmpDB) //test
+	//tmpVar := repository.Link()
+	//tmpVar := repository.Link.AddLink
+	tmpVar1 := repository.DBAdd{ShortLink: link, OriginalLink: linkOriginal}
+	tmpVar2 := repository.MapAdd{ShortLink: link, OriginalLink: linkOriginal}
+	tmpVar2.AddLink()
 
-	MSync.Range(func(key, value interface{}) bool {
+	log.Println("added tmpDB, test:", tmpDB) //test
+	log.Println("added tmpvar1:", tmpVar1)   //test
+	log.Println("added tmpvar2:", tmpVar2)   //test
+
+	pkg.MSync.Range(func(key, value interface{}) bool {
 		log.Println("MSync:", key, value)
 		return true
 	})
