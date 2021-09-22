@@ -114,29 +114,28 @@ func CuttingLink(link string) string {
 	linkOriginal := link
 	link = RandomizeString(link)
 	//pkg.MSync.Store(link, linkOriginal)
-
 	//var mp repository.LinkQuery = &repository.SyncMapS{}
 	//mp.AddLink(link, linkOriginal, MSync)
 	//mp.GetLink(link)
 	//здесь необходимо прописать добавление в таблицу
-	tmpDB, _ := repository.AddNewRow(link, linkOriginal)
+	//tmpDB, _ := repository.AddNewRow(link, linkOriginal)
 	//tmpVar := repository.Link()
 	//tmpVar := repository.Link.AddLink
-	tmpVar1 := repository.DBAdd{ShortLink: link, OriginalLink: linkOriginal}
-	tmpVar2 := repository.MapAdd{ShortLink: link, OriginalLink: linkOriginal}
-	tmpVar2.AddLink()
+	initToDB := repository.DBAdd{ShortLink: link, OriginalLink: linkOriginal}
+	initToMap := repository.MapAdd{ShortLink: link, OriginalLink: linkOriginal}
+	initToMap.AddLink()
+	addToDB, _ := initToDB.AddLink()
 
-	log.Println("added tmpDB, test:", tmpDB) //test
-	log.Println("added tmpvar1:", tmpVar1)   //test
-	log.Println("added tmpvar2:", tmpVar2)   //test
+	//log.Println("1. tmpDB, test:", tmpDB) //test
+	log.Println("2. addToDB:", addToDB)    //test
+	log.Println("3. addToMap:", initToMap) //test
 
 	pkg.MSync.Range(func(key, value interface{}) bool {
 		log.Println("MSync:", key, value)
 		return true
 	})
 	//test
-	test, _ := repository.SearchRow(link)
-	log.Println("Test", test)
+
 	//test
 	return link
 }

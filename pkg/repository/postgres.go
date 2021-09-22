@@ -39,21 +39,6 @@ func PostgresConnect() (*sqlx.DB, error) {
 	return db, nil
 }
 
-func AddNewRow(sl, ol string) (int, error) {
-	var id int
-	db, err := PostgresConnect()
-	if err != nil {
-		log.Fatalf("failed to init db: %s, %s", err.Error(), db)
-	}
-	query := fmt.Sprintf("INSERT INTO storage_links_tab (short_link, original_link) values ($1, $2)")
-	row := db.QueryRow(query, sl, ol)
-	if err := row.Scan(&id); err != nil {
-		return 0, err
-	}
-	log.Println("Row inserted")
-	return 0, nil
-}
-
 func SearchRow(sl string) (int, error) {
 	var id int
 	//items := []*models.Item{}
