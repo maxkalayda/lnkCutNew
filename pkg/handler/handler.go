@@ -27,11 +27,13 @@ func (s *Server) Create(ctx context.Context, in *proto.LinkRequest) (*proto.Link
 	//вызов записи и обработки линка
 	tmpShort := service.CuttingLink(tmpOrig)
 	log.Println("###Start work with DB")
-	log.Printf("Lr3 %v\n", s.Lr)
-	_, err := s.Lr.LinkRepo.AddLink(tmpShort, tmpOrig)
+	//log.Printf("Lr3 %v\n", s.Lr)
+	err := s.Lr.LinkRepo.AddLink(tmpShort, tmpOrig)
+	if err != nil {
+		return &proto.LinkReply{Url: tmpShort}, err
+	}
 	log.Println("###End work with DB")
-	log.Printf("Lr3 %v\n", &proto.LinkReply{Url: tmpShort}, err)
-	return &proto.LinkReply{Url: tmpShort}, nil //TODO:нужно проработать ошибки
+	return &proto.LinkReply{Url: tmpShort}, nil
 }
 
 func (s *Server) Get(ctx context.Context, in *proto.LinkRequest) (*proto.LinkReply, error) {

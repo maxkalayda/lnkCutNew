@@ -5,6 +5,5 @@ import (
 )
 
 var (
-	CompareSlice []string
-	MSync        sync.Map
+	MSync sync.Map
 )

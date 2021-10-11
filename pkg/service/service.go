@@ -67,7 +67,7 @@ func RandomizeString(link string) string {
 		}
 	}
 	//для сравнения, что такая линка не юзается
-	pkg.CompareSlice = append(pkg.CompareSlice, string(rLink))
+	//pkg.CompareSlice = append(pkg.CompareSlice, string(rLink))
 	//проверка перед отправкой дальше, что соответствует шаблону
 	//длина 10 символов
 	//содержит буквы up down

@@ -8,7 +8,7 @@ import (
 )
 
 type Link interface {
-	AddLink(ShortLink, OriginalLink string) (int, error)
+	AddLink(ShortLink, OriginalLink string) error
 	SearchRow(sl string) (string, string, error)
 }
 
@@ -36,21 +36,21 @@ type MapAdd struct {
 //	return &MapAdd{mp: dbf}
 //}
 
-func (d *DBAdd) AddLink(ShortLink, OriginalLink string) (int, error) {
+func (d *DBAdd) AddLink(ShortLink, OriginalLink string) error {
 	log.Println("short link, origLink:", ShortLink, OriginalLink)
 	var id int
 	query := fmt.Sprintf("INSERT INTO storage_links_tab (short_link, original_link) values ($1, $2)")
 	row := d.db.QueryRow(query, ShortLink, OriginalLink)
-	if err := row.Scan(&id); err != nil {
-		return 0, err
+	err := row.Scan(&id)
+	if err != nil && err.Error() != "sql: no rows in result set" {
+		return err
 	}
 	log.Println("Row inserted")
-	return 0, nil
+	return nil
 }
 
 func (d *DBAdd) SearchRow(sl string) (string, string, error) {
 	var id int
-	//log.Printf("searchrow: %v\n",d.db)
 	query := fmt.Sprintf("SELECT * FROM storage_links_tab WHERE short_link = '%s'", sl)
 	row, err := d.db.Query(query)
 	var l1 string

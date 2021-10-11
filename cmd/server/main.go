@@ -26,13 +26,12 @@ func main() {
 	if err != nil {
 		log.Fatalf("env not loaded: %s", err.Error())
 	}
-	//db connect
+
 	db, err := repository.PostgresConnect()
 	if err != nil {
 		log.Fatalf("failed to init db: %s, %s", err.Error(), db)
 	}
 
-	//log.Printf("mainDB: %p\n", db)
 	Lr := service.NewLinkRepo(db)
 	s := grpc.NewServer()
 	srv := &handler.Server{Lr: Lr}
@@ -42,7 +41,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	//для тестов
+
 	reflection.Register(s)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
