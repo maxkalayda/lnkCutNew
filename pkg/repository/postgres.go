@@ -1,11 +1,10 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
-
-	"github.com/jmoiron/sqlx"
 )
 
 type Config struct {
@@ -17,7 +16,7 @@ type Config struct {
 	SSLMode  string
 }
 
-func PostgresConnect() (*sqlx.DB, error) {
+func PostgresConnect() (*sql.DB, error) {
 	//лучше конфиг
 	Host := "localhost"
 	Port := "5432"
@@ -25,7 +24,7 @@ func PostgresConnect() (*sqlx.DB, error) {
 	Password := os.Getenv("DB_PASSWORD")
 	DBName := "postgres"
 	SSLMode := "disable"
-	db, err := sqlx.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
+	db, err := sql.Open("postgres", fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=%s",
 		Host, Port, Username, DBName, Password, SSLMode))
 	if err != nil {
 		return nil, err
@@ -39,18 +38,18 @@ func PostgresConnect() (*sqlx.DB, error) {
 	return db, nil
 }
 
-func SearchRow(sl string) (int, error) {
-	var id int
-	//items := []*models.Item{}
-	//items := models.Item{}
-	db, err := PostgresConnect()
-	if err != nil {
-		log.Fatalf("failed to init db: %s, %s", err.Error(), db)
-	}
-	query := fmt.Sprintf("SELECT original_link FROM storage_links_tab WHERE short_link=(?)", sl)
-
-	row, _ := db.Query(query)
-
-	log.Println("search row:", id, row)
-	return 0, err
-}
+//func SearchRow(sl string) (int, error) {
+//	var id int
+//	//items := []*models.Item{}
+//	//items := models.Item{}
+//	db, err := PostgresConnect()
+//	if err != nil {
+//		log.Fatalf("failed to init db: %s, %s", err.Error(), db)
+//	}
+//	query := fmt.Sprintf("SELECT original_link FROM storage_links_tab WHERE short_link=(?)", sl)
+//
+//	row, _ := db.Query(query)
+//
+//	log.Println("search row:", id, row)
+//	return 0, err
+//}

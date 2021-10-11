@@ -1,6 +1,8 @@
 package service
 
 import (
+	"database/sql"
+	_ "github.com/jmoiron/sqlx"
 	"github.com/maxkalayda/lnkCutNew/pkg"
 	"log"
 	"strings"
@@ -9,6 +11,26 @@ import (
 
 	"github.com/maxkalayda/lnkCutNew/pkg/repository"
 )
+
+type Implementation struct {
+	LinkRepo  repository.Link
+	LinkRepo2 repository.Link
+}
+
+func NewLinkRepo(db *sql.DB) *Implementation {
+	lrep := repository.NewLink(db)
+	lrep2 := repository.NewLink(db)
+	return &Implementation{LinkRepo: lrep, LinkRepo2: lrep2}
+}
+
+//type ImplementationMap struct {
+//	LinkRepoMap repository.Link
+//}
+//
+//func NewLinkRepoMap (mp *sync.Map) *Implementation {
+//	lrep:=repository.NewLinkMap(mp)
+//	return &Implementation{LinkRepo:lrep}
+//}
 
 func RandomizeString(link string) string {
 	alphabet := "a1b2c3d4f5z6x7c8v9b0mnbhj"
@@ -111,7 +133,7 @@ func RandomizeString(link string) string {
 
 func CuttingLink(link string) string {
 	//создаём укороченную линку и вносим в мап
-	linkOriginal := link
+	LinkOriginal := link
 	link = RandomizeString(link)
 	//pkg.MSync.Store(link, linkOriginal)
 	//var mp repository.LinkQuery = &repository.SyncMapS{}
@@ -121,14 +143,17 @@ func CuttingLink(link string) string {
 	//tmpDB, _ := repository.AddNewRow(link, linkOriginal)
 	//tmpVar := repository.Link()
 	//tmpVar := repository.Link.AddLink
-	initToDB := repository.DBAdd{ShortLink: link, OriginalLink: linkOriginal}
-	initToMap := repository.MapAdd{ShortLink: link, OriginalLink: linkOriginal}
+
+	//initToDB := repository.DBAdd{ShortLink: link, OriginalLink: LinkOriginal}
+	initToMap := repository.MapAdd{ShortLink: link, OriginalLink: LinkOriginal}
 	initToMap.AddLink()
-	addToDB, _ := initToDB.AddLink()
+	//addToDB, _ := initToDB.AddLink()
+	//Lr:=NewLinkRepo(pkg.Lr)
+	//Lr.LinkRepo.AddLink("222","12322")
 
 	//log.Println("1. tmpDB, test:", tmpDB) //test
-	log.Println("2. addToDB:", addToDB)    //test
-	log.Println("3. addToMap:", initToMap) //test
+	//log.Println("2. addToDB:", addToDB)    //test
+	log.Println("Service - addToMap:", initToMap) //test
 
 	pkg.MSync.Range(func(key, value interface{}) bool {
 		log.Println("MSync:", key, value)

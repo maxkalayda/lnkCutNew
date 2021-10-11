@@ -2,26 +2,33 @@ package handler
 
 import (
 	"context"
-	"github.com/maxkalayda/lnkCutNew/pkg"
-	"log"
-	"unicode/utf8"
-
 	"github.com/maxkalayda/lnkCutNew/api/proto"
-	lnkCutNew "github.com/maxkalayda/lnkCutNew/pkg/service"
+	"github.com/maxkalayda/lnkCutNew/pkg"
+	"github.com/maxkalayda/lnkCutNew/pkg/service"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"log"
+	"unicode/utf8"
 )
+
+//type Server struct {
+//	proto.UnimplementedLinkServiceServer
+//}
 
 type Server struct {
 	proto.UnimplementedLinkServiceServer
+	Lr2 *service.Implementation
 }
 
 func (s *Server) Create(ctx context.Context, in *proto.LinkRequest) (*proto.LinkReply, error) {
-	tmp := in.GetLink()
+	tmpOrig := in.GetLink()
 	log.Printf("Server | Received from client origLink: %v", in.GetLink())
-	tmp = lnkCutNew.CuttingLink(tmp)
-
-	return &proto.LinkReply{Url: tmp}, nil
+	//вызов записи и обработки линка
+	log.Println("###Start work with DB")
+	tmpShort := service.CuttingLink(tmpOrig)
+	_, err := s.Lr2.LinkRepo2.AddLink(tmpShort, tmpOrig)
+	log.Println("###End work with DB")
+	return &proto.LinkReply{Url: tmpShort}, err
 }
 
 func (s *Server) Get(ctx context.Context, in *proto.LinkRequest) (*proto.LinkReply, error) {

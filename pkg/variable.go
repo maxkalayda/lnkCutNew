@@ -1,6 +1,8 @@
 package pkg
 
-import "sync"
+import (
+	"sync"
+)
 
 var (
 	CompareSlice []string
