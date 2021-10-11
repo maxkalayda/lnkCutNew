@@ -37,19 +37,3 @@ func PostgresConnect() (*sql.DB, error) {
 	log.Printf("successfully connected to DB: %s:%s", Host, Port)
 	return db, nil
 }
-
-//func SearchRow(sl string) (int, error) {
-//	var id int
-//	//items := []*models.Item{}
-//	//items := models.Item{}
-//	db, err := PostgresConnect()
-//	if err != nil {
-//		log.Fatalf("failed to init db: %s, %s", err.Error(), db)
-//	}
-//	query := fmt.Sprintf("SELECT original_link FROM storage_links_tab WHERE short_link=(?)", sl)
-//
-//	row, _ := db.Query(query)
-//
-//	log.Println("search row:", id, row)
-//	return 0, err
-//}

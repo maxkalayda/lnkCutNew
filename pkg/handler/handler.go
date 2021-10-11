@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"github.com/maxkalayda/lnkCutNew/api/proto"
-	"github.com/maxkalayda/lnkCutNew/pkg"
 	"github.com/maxkalayda/lnkCutNew/pkg/service"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -17,48 +16,73 @@ import (
 
 type Server struct {
 	proto.UnimplementedLinkServiceServer
-	Lr2 *service.Implementation
+	Lr        *service.Implementation
+	ShortLink string
+	OrigLink  string
 }
 
 func (s *Server) Create(ctx context.Context, in *proto.LinkRequest) (*proto.LinkReply, error) {
 	tmpOrig := in.GetLink()
 	log.Printf("Server | Received from client origLink: %v", in.GetLink())
 	//вызов записи и обработки линка
-	log.Println("###Start work with DB")
 	tmpShort := service.CuttingLink(tmpOrig)
-	_, err := s.Lr2.LinkRepo2.AddLink(tmpShort, tmpOrig)
+	log.Println("###Start work with DB")
+	log.Printf("Lr3 %v\n", s.Lr)
+	_, err := s.Lr.LinkRepo.AddLink(tmpShort, tmpOrig)
 	log.Println("###End work with DB")
-	return &proto.LinkReply{Url: tmpShort}, err
+	log.Printf("Lr3 %v\n", &proto.LinkReply{Url: tmpShort}, err)
+	return &proto.LinkReply{Url: tmpShort}, nil //TODO:нужно проработать ошибки
 }
 
 func (s *Server) Get(ctx context.Context, in *proto.LinkRequest) (*proto.LinkReply, error) {
-	tmp := in.GetLink()
+	tmp := in.GetLink() //получили укороченную линку
 	tmpLen := utf8.RuneCountInString(tmp)
-	_, ok := pkg.MSync.Load(tmp)
-	if tmpLen < 10 {
+	log.Printf("START: Get from client short link: %s", tmp)
+	//_, ok := pkg.MSync.Load(tmp)
+	//SearchShort, SearchOrig, _ :=s.Lr.LinkRepo.SearchRow(tmp)
+	//log.Printf("Get %v, %v", SearchShort, SearchOrig)
+	var tmpOrig string
+
+	if tmpLen != 10 {
 		err := status.Newf(
 			codes.InvalidArgument,
-			"Длина ссылки меньше 10 символов.")
-		log.Println("Длина ссылки меньше 10 символов")
+			"Длина ссылки не равна 10 символов.")
+		log.Println("Длина ссылки не равна 10 символов")
 		err, withDet := err.WithDetails(in)
 		if withDet != nil {
 			return nil, withDet
 		}
 		return nil, err.Err()
-	} else if !ok {
-		err := status.Newf(
-			codes.NotFound,
-			"Укороченная ссылка не найдена")
-		log.Println("Укороченная ссылка не найдена")
-		err, withDet := err.WithDetails(in)
-		if withDet != nil {
-			return nil, withDet
-		}
-		return nil, err.Err()
+		//} else if err {
+		//	err := status.Newf(
+		//		codes.NotFound,
+		//		"Укороченная ссылка не найдена")
+		//	log.Println("Укороченная ссылка не найдена")
+		//	err, withDet := err.WithDetails(in)
+		//	if withDet != nil {
+		//		return nil, withDet
+		//	}
+		//	return nil, err.Err()
 	} else {
-		log.Printf("Получили от клиента укороченную ссылку: %v", in.GetLink())
-		newVal, _ := pkg.MSync.Load(tmp)
-		tmp = newVal.(string)
+		//newVal, _ := pkg.MSync.Load(tmp)
+		//tmp = newVal.(string)
+		SearchShort, SearchOrig, err := s.Lr.LinkRepo.SearchRow(tmp)
+		log.Println("err", err)
+		log.Printf("END: Get from client short link: %s, %s", SearchShort, SearchOrig)
+		tmpOrig = SearchOrig
+		log.Println("orig len:", utf8.RuneCountInString(tmpOrig))
+		log.Println("short len:", utf8.RuneCountInString(tmp))
+		if err == nil && (utf8.RuneCountInString(tmpOrig) == 0 || utf8.RuneCountInString(tmp) == 0) {
+			err := status.Newf(
+				codes.NotFound,
+				"Укороченная ссылка не найдена")
+			log.Println("Укороченная ссылка не найдена")
+			err, withDet := err.WithDetails(in)
+			if withDet != nil {
+				return nil, withDet
+			}
+			return nil, err.Err()
+		}
 	}
-	return &proto.LinkReply{Url: tmp}, nil
+	return &proto.LinkReply{Url: tmpOrig}, nil
 }

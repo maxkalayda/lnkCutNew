@@ -32,23 +32,10 @@ func main() {
 		log.Fatalf("failed to init db: %s, %s", err.Error(), db)
 	}
 
-	//
-	//Lr:=service.NewLinkRepo(db)
-	//log.Printf("Lr %T\n", Lr)
-	//Lr.LinkRepo.AddLink("444","224442")
-
+	//log.Printf("mainDB: %p\n", db)
 	Lr := service.NewLinkRepo(db)
-	Lr2 := service.NewLinkRepo(db)
-	log.Printf("Lr %T\n", Lr)
-	log.Printf("Lr2 %T\n", Lr2)
-
-	//Lr.LinkRepo2.AddLink("555","555")
-	//Mr := service.NewLinkRepoMap(pkg.MSync)
-
-	//
-
 	s := grpc.NewServer()
-	srv := &handler.Server{}
+	srv := &handler.Server{Lr: Lr}
 	pb.RegisterLinkServiceServer(s, srv)
 
 	lis, err := net.Listen("tcp", port)
@@ -60,5 +47,4 @@ func main() {
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
-
 }

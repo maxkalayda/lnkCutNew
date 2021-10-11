@@ -13,14 +13,12 @@ import (
 )
 
 type Implementation struct {
-	LinkRepo  repository.Link
-	LinkRepo2 repository.Link
+	LinkRepo repository.Link
 }
 
 func NewLinkRepo(db *sql.DB) *Implementation {
 	lrep := repository.NewLink(db)
-	lrep2 := repository.NewLink(db)
-	return &Implementation{LinkRepo: lrep, LinkRepo2: lrep2}
+	return &Implementation{LinkRepo: lrep}
 }
 
 //type ImplementationMap struct {
@@ -46,7 +44,6 @@ func RandomizeString(link string) string {
 	link = strings.ReplaceAll(link, "https://", "")
 	if utf8.RuneCountInString(link) < 9 {
 		link += alphabet[utf8.RuneCountInString(link):9]
-
 	} else if utf8.RuneCountInString(link) > 9 {
 		link = link[0:9]
 	} else {
@@ -92,7 +89,6 @@ func RandomizeString(link string) string {
 		}
 
 	}
-
 	//проверка на количество апперов и лоуверов
 	countDig := 0
 	countUpper := 0
@@ -135,32 +131,15 @@ func CuttingLink(link string) string {
 	//создаём укороченную линку и вносим в мап
 	LinkOriginal := link
 	link = RandomizeString(link)
-	//pkg.MSync.Store(link, linkOriginal)
-	//var mp repository.LinkQuery = &repository.SyncMapS{}
-	//mp.AddLink(link, linkOriginal, MSync)
-	//mp.GetLink(link)
-	//здесь необходимо прописать добавление в таблицу
-	//tmpDB, _ := repository.AddNewRow(link, linkOriginal)
-	//tmpVar := repository.Link()
-	//tmpVar := repository.Link.AddLink
 
-	//initToDB := repository.DBAdd{ShortLink: link, OriginalLink: LinkOriginal}
 	initToMap := repository.MapAdd{ShortLink: link, OriginalLink: LinkOriginal}
 	initToMap.AddLink()
-	//addToDB, _ := initToDB.AddLink()
-	//Lr:=NewLinkRepo(pkg.Lr)
-	//Lr.LinkRepo.AddLink("222","12322")
-
-	//log.Println("1. tmpDB, test:", tmpDB) //test
-	//log.Println("2. addToDB:", addToDB)    //test
-	log.Println("Service - addToMap:", initToMap) //test
+	log.Println("Service - addToMap:", initToMap)
 
 	pkg.MSync.Range(func(key, value interface{}) bool {
 		log.Println("MSync:", key, value)
 		return true
 	})
-	//test
 
-	//test
 	return link
 }
